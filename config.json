@@ -1,0 +1,25 @@
+{
+  "pdfs": [
+    { "name": "1.pdf", "path": "assets/pdf/1.pdf" },
+    { "name": "2.pdf", "path": "assets/pdf/2.pdf" },
+    { "name": "3.pdf", "path": "assets/pdf/3.pdf" },
+    { "name": "4.pdf", "path": "assets/pdf/4.pdf" },
+    { "name": "5.pdf", "path": "assets/pdf/5.pdf" },
+    { "name": "6.pdf", "path": "assets/pdf/6.pdf" },
+    { "name": "7.pdf", "path": "assets/pdf/7.pdf" },
+    { "name": "8.pdf", "path": "assets/pdf/8.pdf" },
+    { "name": "9.pdf", "path": "assets/pdf/9.pdf" },
+    { "name": "10.pdf", "path": "assets/pdf/10.pdf" },
+    { "name": "11.pdf", "path": "assets/pdf/11.pdf" },
+    { "name": "12.pdf", "path": "assets/pdf/12.pdf" },
+    { "name": "13.pdf", "path": "assets/pdf/13.pdf" },
+    { "name": "14.pdf", "path": "assets/pdf/14.pdf" },
+    { "name": "15.pdf", "path": "assets/pdf/15.pdf" }
+  ],
+  "excel": [{ "name": "Production_Data.xlsx", "path": "assets/excel/Production_Data_Modified.xlsx" }],
+  "loan": [
+    { "name": "Abigail_LateFee", "path": "assets/loan/Abigail_LateFee.pdf" },
+    { "name": "Lucas_PaymentReturn", "path": "assets/loan/Lucas_PaymentReturn.pdf" },
+    { "name": "Olivia_LateFee", "path": "assets/loan/Olivia_LateFee.pdf" }
+  ]
+}
