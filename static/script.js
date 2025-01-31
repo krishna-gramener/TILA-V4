@@ -15,30 +15,7 @@ const filesUploaded = {
   isCustomerLoanPdf: false,
 };
 
-const { token } = await fetch("https://llmfoundry.straive.com/token", { credentials: "include" }).then((r) => r.json());
-if (!token) {
-  document.getElementById("main-container").classList.add("d-none");
-  const url = "https://llmfoundry.straive.com/login?" + new URLSearchParams({ next: location.href });
-  render(html`<a class="btn btn-primary" href="${url}">Log into LLM Foundry</a></p>`, document.querySelector("#login"));
-}
 // ----------------------------------------------Misc Functions----------------------------------------------
-function extractJSON(data) {
-  const jsonPattern = /```json([\s\S]*?)```/;
-  const match = data.match(jsonPattern);
-  let jsonData = {};
-  if (match) {
-    // Step 2: Parse the JSON string to a JavaScript object
-    try {
-      jsonData = JSON.parse(match[1].trim());
-
-      return jsonData; // Logs the parsed JSON object
-    } catch (error) {
-      showError("Invalid JSON:", error);
-    }
-  } else {
-    showError("No JSON block found in the markdown.");
-  }
-}
 
 // Show/hide loading spinner
 function toggleLoading(show) {
@@ -405,17 +382,31 @@ function generateFinalCmTable() {
 
 // ----------------------------------------Styling Event Listeners----------------------------------
 document.getElementById("undertakingCard").addEventListener("click", () => {
-  document.getElementById("undertakingSection").style.display = "block";
-  document.getElementById("customerSection").style.display = "none";
-  document.getElementById("undertakingCard").classList.add("bg-primary", "text-white");
+  const undertakingSection = document.getElementById("undertakingSection");
+  undertakingSection.classList.toggle("d-none");
+  document.getElementById("customerSection").classList.add("d-none");
+
+  const undertakingCard = document.getElementById("undertakingCard");
+  if (!undertakingSection.classList.contains("d-none")) {
+    undertakingCard.classList.add("bg-primary", "text-white");
+  } else {
+    undertakingCard.classList.remove("bg-primary", "text-white");
+  }
   document.getElementById("customerManagementCard").classList.remove("bg-primary", "text-white");
 });
 
 document.getElementById("customerManagementCard").addEventListener("click", () => {
-  document.getElementById("customerSection").style.display = "block";
-  document.getElementById("undertakingSection").style.display = "none";
+  const customerSection = document.getElementById("customerSection");
+  customerSection.classList.toggle("d-none");
+  document.getElementById("undertakingSection").classList.add("d-none");
+
+  const customerCard = document.getElementById("customerManagementCard");
+  if (!customerSection.classList.contains("d-none")) {
+    customerCard.classList.add("bg-primary", "text-white");
+  } else {
+    customerCard.classList.remove("bg-primary", "text-white");
+  }
   document.getElementById("undertakingCard").classList.remove("bg-primary", "text-white");
-  document.getElementById("customerManagementCard").classList.add("bg-primary", "text-white");
 });
 
 // ---------------------------------------Individual Reports-----------------------------------------------
@@ -434,7 +425,7 @@ document.getElementById("undertakingPdfSelect").addEventListener("change", (e) =
   try {
     toggleVisibility(true);
 
-    if(!selectedFile)return;
+    if (!selectedFile) return;
     if (!pdfContent) throw new Error("PDF not found");
 
     // Display PDF content
@@ -470,7 +461,7 @@ document.getElementById("loanPdfSelect").addEventListener("change", (e) => {
   try {
     toggleVisibility(true);
 
-    if(!selectedFile)return;
+    if (!selectedFile) return;
     if (!pdfContent) throw new Error("PDF not found");
 
     // Update viewer and content
@@ -534,35 +525,8 @@ document.getElementById("customerProcess").addEventListener("click", (e) => {
   }
 });
 
-// ---------------------------------------File Handling--------------------------------------------------
-async function loadExcelFiles(filePath, stateKey) {
-  try {
-    const response = await fetch(filePath);
-    const data = await response.arrayBuffer(); // Fetch the binary content of the file
+//---------------------------------------Send Email-------------------------------------------------------
 
-    const workbook = XLSX.read(data, { type: "array" });
-    const excelContent = workbook.SheetNames.map((sheetName) => {
-      const sheet = workbook.Sheets[sheetName];
-      return {
-        sheetName: sheetName,
-        data: XLSX.utils.sheet_to_json(sheet, { header: 1 }), // Ensure data extraction as an array of arrays
-      };
-    });
-
-    // Store the processed data in the state object
-    const customerDataExcel = await extractExcelInfoUsingGemini(excelContent);
-    state[stateKey] = extractJSON(customerDataExcel);
-
-    return excelContent; // Return the parsed data
-  } catch (error) {
-    showError("Error loading Excel file:", error);
-    return null;
-  }
-}
-
-//---------------------------------------Sending Email-------------------------------------------------------
-
-// Function to send email without using a predefined EmailJS template
 function sendEmail(loanId, category) {
   const recipientEmail = "satyajeet.jaiswal@straive.com";
   const userDetailsPdf = Object.values(state.undertakingPdfs).filter((pdfData) => {
@@ -660,7 +624,6 @@ document.querySelector("#undertakingOutput").addEventListener("click", (e) => {
 });
 
 document.querySelector("#customerOutput").addEventListener("click", (e) => {
-
   if (e.target.closest(".email-btn")) {
     e.stopPropagation();
     const button = e.target.closest(".email-btn");
@@ -710,11 +673,10 @@ document.querySelector("#customerOutput").addEventListener("click", (e) => {
   }
 });
 
-function createDummyOption(selectedElement){
+function createDummyOption(selectedElement) {
   const dummyOption = document.createElement("option");
   dummyOption.value = ""; // No value assigned
   dummyOption.textContent = "all.pdf"; // Text displayed in the dropdown
-  // dummyOption.selected = true;  Set as default selected option
   selectedElement.appendChild(dummyOption);
 }
 
@@ -722,8 +684,6 @@ async function loadFiles() {
   const undertakingPdfSelect = document.getElementById("undertakingPdfSelect");
   const undertakingExcelSelect = document.getElementById("undertakingExcelSelect");
   const loanPdfSelect = document.getElementById("loanPdfSelect");
-  const extractedTexts = state.undertakingPdfs;
-  const extractedLoanTexts = state.loanPdfs;
   const customerTila = document.getElementById("customerPdfSelect");
   const customerExcel = document.getElementById("customerExcelSelect");
 
@@ -739,13 +699,15 @@ async function loadFiles() {
 
     // Parse the JSON data
     const { pdfs: pdfConfig, excel: excelConfig, loan: loanConfig } = await response.json(); // Separate PDFs and Excel files
-
+    state.undertakingPdfs = await fetch("assets/data/pdf.json").then((res) => res.json());
+    state.undertakingExcel = await fetch("assets/data/excel.json").then((res) => res.json());
+    state.loanPdfs = await fetch("assets/data/loan.json").then((res) => res.json());
     // Populate the PDF dropdown
     pdfConfig.forEach((pdf) => {
       const option = document.createElement("option");
       option.value = pdf.path; // Path will be used for loading
       option.textContent = pdf.name; // Name displayed in the dropdown
-      option.style.display="none";
+      option.style.display = "none";
       undertakingPdfSelect.appendChild(option);
       const customerPdfOption = option.cloneNode(true);
       customerTila.append(customerPdfOption);
@@ -754,257 +716,29 @@ async function loadFiles() {
     createDummyOption(undertakingPdfSelect);
     createDummyOption(customerTila);
 
-    // Preload and cache PDF texts (optional)
-    for (const pdf of pdfConfig) {
-      if (!extractedTexts[pdf.path]) {
-        const base64 = await getBase64FromPdf(pdf.path);
-        const text = await extractTextUsingGemini(base64);
-        const textInJson = extractJSON(text);
-        extractedTexts[pdf.path] = textInJson;
-      }
-    }
     // Populate the Excel dropdown
     excelConfig.forEach((excel) => {
       const option = document.createElement("option");
       option.value = excel.path; // Path will be used for loading
       option.textContent = excel.name; // Name displayed in the dropdown
       undertakingExcelSelect.appendChild(option);
-
       const customerExcelOption = option.cloneNode(true);
       customerExcel.append(customerExcelOption);
     });
-
-    // Preload and cache Excel data (optional)
-    for (const excel of excelConfig) {
-      const excelData = await loadExcelFiles(excel.path, "undertakingExcel"); // Function to parse Excel data
-    }
 
     loanConfig.forEach((loan) => {
       const option = document.createElement("option");
       option.value = loan.path; // Path will be used for loading
       option.textContent = loan.name; // Name displayed in the dropdown
-      option.style.display="none";
+      option.style.display = "none";
       loanPdfSelect.appendChild(option);
     });
-
     createDummyOption(loanPdfSelect);
-
-    for (const loan of loanConfig) {
-      if (!extractedTexts[loan.path]) {
-        const base64 = await getBase64FromPdf(loan.path);
-        const text = await extractLoanTextUsingGemini(base64);
-        const textInJson = extractJSON(text);
-        extractedLoanTexts[loan.path] = textInJson;
-      }
-    }
   } catch (error) {
     showError(error.message);
   } finally {
     // Hide loading indicator
     toggleLoading(false);
-  }
-}
-
-async function getBase64FromPdf(url) {
-  try {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  } catch (error) {
-    throw new Error(`Failed to convert PDF to base64: ${error.message}`);
-  }
-}
-
-async function extractTextUsingGemini(base64Pdf) {
-  try {
-    const response = await fetch(
-      "https://llmfoundry.straive.com/gemini/v1beta/models/gemini-1.5-flash-latest:generateContent",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          system_instruction: {
-            parts: [
-              {
-                text: `Extract and return only the text content from the provided PDF.
-                Data Should be in following format :-
-                {
-                Complete Extracted Text,
-                Creditor,
-Borrower,
-Account Number,
-Annual Percentage Rate (APR),
-Finance Charge,
-Amount Financed,
-Total of Payments,
-Monthly Payment Amount,
-Number of Payments,
-Returned Payment Fee,
-Origination Fee,
-Late Charges,
-              }
-return in json format only.
-                `,
-              },
-            ],
-          },
-          contents: [
-            {
-              role: "user",
-              parts: [
-                { text: "This is a PDF document for text extraction." }, // Added the `text` field to describe the PDF
-                {
-                  inline_data: {
-                    mime_type: "application/pdf",
-                    data: base64Pdf.split(",")[1], // Base64 content excluding the prefix
-                  },
-                },
-              ],
-            },
-          ],
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error?.message || `Unexpected error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-  } catch (error) {
-    throw new Error(`Gemini API error: ${error.message}`);
-  }
-}
-
-async function extractExcelInfoUsingGemini(excelData) {
-  try {
-    const response = await fetch(
-      "https://llmfoundry.straive.com/gemini/v1beta/models/gemini-1.5-flash-latest:generateContent",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          system_instruction: {
-            parts: [
-              {
-                text: `For Each user, extract the following information from the provided Excel Data:
-                Data Should be in following format :-
-                {
-                Application Id,
-                Loan Id,
-Borrower,
-APR,
-Finance Charge,
-Amount Financed,
-Total of Payments,
-EMI Amount,
-Number of Payments,
-Returned Payment Charges,
-Origination Fee,
-Booking Date,
-Late Fee Charges,
-Month Date
-              }
-return in json format only.
-                `,
-              },
-            ],
-          },
-          contents: [
-            {
-              role: "user",
-              parts: [
-                { text: `This is a Excel Document for text extraction\n. ${JSON.stringify(excelData)} ` }, // Added the `text` field to describe the PDF
-              ],
-            },
-          ],
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error?.message || `Unexpected error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-  } catch (error) {
-    throw new Error(`Gemini API error: ${error.message}`);
-  }
-}
-
-async function extractLoanTextUsingGemini(base64Pdf) {
-  try {
-    const response = await fetch(
-      "https://llmfoundry.straive.com/gemini/v1beta/models/gemini-1.5-flash-latest:generateContent",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          system_instruction: {
-            parts: [
-              {
-                text: `Extract and return only the text content from the provided PDF.
-                Data Should be in following format :-
-                {
-                Complete Extracted Text,
-                Borrower,
-                Loan Id,
-                Late Fee amount,
-                Payment Return Amount
-              }
-return in json format only.
-                `,
-              },
-            ],
-          },
-          contents: [
-            {
-              role: "user",
-              parts: [
-                { text: "This is a PDF document for text extraction." }, // Added the `text` field to describe the PDF
-                {
-                  inline_data: {
-                    mime_type: "application/pdf",
-                    data: base64Pdf.split(",")[1], // Base64 content excluding the prefix
-                  },
-                },
-              ],
-            },
-          ],
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error?.message || `Unexpected error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-  } catch (error) {
-    throw new Error(`Gemini API error: ${error.message}`);
   }
 }
 

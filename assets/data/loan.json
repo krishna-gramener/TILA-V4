@@ -1,0 +1,23 @@
+{
+  "assets/loan/Abigail_LateFee.pdf": {
+    "Complete Extracted Text": "ABC Bank\nDecember 2024\nDear Abigail Taylor,\nWe are writing to remind you that your Loan ID: 2944923 account is delinquent.\nYour account is subject to an additional late fee and same has been levied in accordance\nwith loan agreement.\nYour late fee amount is $7.54. Please find below your account statement.\nDate\nTxn Type\nEMI\nAmount\nPayment\nAmount\nLate Fee\nDQ Fee\nBalance\n20240501\nDisbursal\n$0\n$0\n$3622.10\n20240601\nEMI\n$150.81\n$150.81\n$3471.29\n20240701\nEMI\n$150.81\n$150.81\n$3320.48\n20240801\nEMI\n$150.81\n$150.81\n$3169.67\n20240901\nEMI\n$150.81\n$150.81\n$3018.86\n20241001\nEMI\n$150.81\n$150.81\n$2868.05\n20241101\nEMI\n$150.81\n$0\n$7.54\n$20\n$2868.05\nContact us promptly at (888) 555-5555 to settle your outstanding account balance and avoid\nfuture late payment fees\nRegards,\nABC Payment Collections Team\nCollections@ABC.com\n(888) 555-5555\nIf you have already settled your account balance, please ignore this letter and accept our\napologies for the inconvenience.\nABC",
+    "Borrower": "Abigail Taylor",
+    "Loan Id": "2944923",
+    "Late Fee amount": "$7.54",
+    "Payment Return Amount": null
+  },
+  "assets/loan/Lucas_PaymentReturn.pdf": {
+    "Complete Extracted Text": "Dear Lucas Brooks,\nABC Bank\nDecember 2024\nWe are writing to inform you that your last payment on Loan ID: 2910557 account is\nreturned.\nYour account is subject to an additional payment return fee and same has been levied in\naccordance with loan agreement.\nYour payment return amount is $25.00. Please find below your account statement.\nDate\tTxn Type\tEMI\nAmount\tPayment\nAmount\tPayment\nReturn Fee\tBalance\n20240501\tDisbursal\t$0\t$0\t\t$2913.22\n20240601\tEMI\t$121.29\t$121.29\t\t$2791.93\n20240701\tEMI\t$121.29\t$121.29\t\t$2670.64\n20240801\tEMI\t$121.29\t$121.29\t\t$2549.35\n20240901\tEMI\t$121.29\t$121.29\t\t$2428.06\n20241001\tEMI\t$121.29\t$121.29\t\t$2306.77\n20241101\tEMI\t$121.29\t$121.29\t$25.00\t$2306.77\nRegards,\nABC Payment Collections Team\nCollections@ABC.com\n(888) 555-5555\nABC",
+    "Borrower": "Lucas Brooks",
+    "Loan Id": "2910557",
+    "Late Fee amount": "$25.00",
+    "Payment Return Amount": "$25.00"
+  },
+  "assets/loan/Olivia_LateFee.pdf": {
+    "Complete Extracted Text": "Dear Olivia Patel,\nABC Bank\nDecember 2024\nWe are writing to remind you that your Loan ID: 2944759 account is delinquent.\nYour account is subject to an additional late fee and same has been levied in accordance\nwith loan agreement.\nYour late fee amount is $7.25. Please find below your account statement.\nDate\nTxn Type\nEMI\nAmount\nPayment\nLate Fee\nDQ Fee\nBalance\nAmount\n20240501\nDisbursal\n$0\n$0\n$3481.45\n20240601\nEMI\n$144.95\n$144.95\n$3336.50\n20240701\nEMI\n$144.95\n$144.95\n$3191.55\n20240801\nEMI\n$144.95\n$144.95\n$3046.60\n20240901\nEMI\n$144.95\n$144.95\n$2901.65\n20241001\nEMI\n$144.95\n$144.95\n$2756.70\n20241101\nEMI\n$144.95\n$0\n$7.25\n$20\n$2756.70\nContact us promptly at (888) 555-5555 to settle your outstanding account balance and avoid\nfuture late payment fees\nRegards,\nABC Payment Collections Team\nCollections@ABC.com\n(888) 555-5555\nIf you have already settled your account balance, please ignore this letter and accept our\napologies for the inconvenience.\nABC",
+    "Borrower": "Olivia Patel",
+    "Loan Id": "2944759",
+    "Late Fee amount": "$7.25",
+    "Payment Return Amount": null
+  }
+}
